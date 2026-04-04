@@ -32,6 +32,12 @@ public class Auction extends Entity{
         BidTransaction temp=new BidTransaction(bidder,price);
         list.put(temp.getId(),temp);
     }
+	public double getMiniumStep(){
+		return this.miniumStep;
+	}
+	public double getCurrentPrice(){
+		return this.currentPrice;
+	}
 
 
 }
