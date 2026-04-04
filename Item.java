@@ -1,16 +1,16 @@
 public abstract class Item extends Entity{
-	private String name;
-	private double basePrice;
-	private User owner;
-	public Item(String name, double basePrice, ){
-		this.name=name;
-		this.basePrice=basePrice;
-	}
-	public String getName(){
-		return this.name;
-	}
-	public double getBasePrice(){
-		return this.basePrice;
-	}
+    private String name;
+    private String description;
+    public Item(String name,String description){
+        super();
+        this.name = name;
+        this.description = description;
+    }
+    // Getter - setter
+    public String getName(){return this.name;}
+    public void setName(String newName){this.name = newName;}
+    public String getDescription(){return this.description;}
+    public void setDescription(String newDescription){this.description = newDescription;}
+    public String getId(){return super.getId();}
 }
-	
+

@@ -1,8 +1,8 @@
 public class Wallet extends Entity{
     private double balance;
     private double lockBalance;
-    public Wallet(String id){
-        super(id);
+    public Wallet(){
+        super();
         this.balance = 0;this.lockBalance = 0;
     }
     //Getter/Setter
