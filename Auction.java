@@ -22,13 +22,12 @@ public class Auction extends Entity{
     }
     public void setCurentWinner(Clients bidder,double price){
         if(this.currentPrice + miniumStep<=price){
-            String id=UUID.randomUUID().toString();
             this.currentWinner=bidder;
             this.currentPrice=price;
-            this.addBidTransaction(id,bidder,price);
+            this.addBidTransaction(bidder,price);
         }
     }
-    public void addBidTransaction(String id,Clients bidder, double price){
+    public void addBidTransaction(Clients bidder, double price){
         BidTransaction temp=new BidTransaction(bidder,price);
         list.put(temp.getId(),temp);
     }
