@@ -33,6 +33,7 @@ public class Clients extends User implements Bidder, Seller{
 
     @Override
     public void placeBid(Auction a, double price) {
+		a.setCurentWinner(this,price);
 
     }
 
