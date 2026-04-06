@@ -11,6 +11,6 @@ public abstract class Item extends Entity{
     public void setName(String newName){this.name = newName;}
     public String getDescription(){return this.description;}
     public void setDescription(String newDescription){this.description = newDescription;}
-    public String getId(){return super.getId();}
+    
 }
 
