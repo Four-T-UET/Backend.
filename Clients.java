@@ -33,9 +33,45 @@ public class Clients extends User implements Bidder, Seller{
 
     @Override
     public void placeBid(Auction a, double price) {
-		a.setCurentWinner(this,price);
+		//check money
+		if (wallet.getBalance() + wallet.getLockBalance() < price){
+			System.out.println("Khong du tien trong tai khoan");
+			return;
+		}
+		boolean isBidValid=a.setCurentWinner(this,price);
+		//Lockmoney
+		if (isBidValid){
+			//lockbalance
+			wallet.lockWallet(price);
+			System.out.println("Dat gia thanh cong");
+		}
+		else{
+			System.out.println("Dat gia that bai, so tien dat khong hop le");
+		}
+	}
+			
+			
 
-    }
+    
+	public void update(Auction a, AuctionEvent eventType, String message){
+		//print notification
+		System.out.println("Cap nhat phien: "+ message);
+		// logic wallet
+		if (eventType==AuctionEvent.PRICE_UPDATED){
+			//check lockbalance
+			boolean isMoneyLocked = this.wallet.getLockBalance() > 0;
+			//check winner
+			boolean amIWinner = (a.getCurrentWinner() == this);
+			
+			if (isMoneyLocked && !amIWinner){
+				this.wallet.releaseBalance();
+				System.out.println("Ban da bi vuot gia, tien da duoc tra ve tai khoan");
+			}
+		}
+	}
+				
+			
+			
 
 //    @Override
 //    public void setAutoBid(Auction a, double maxBid, double increment) {
