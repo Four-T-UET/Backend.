@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.resou.etrade.ControlDashBoard">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ControlDashBoard">
    <top>
       <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="20.0" BorderPane.alignment="CENTER">
          <children>
@@ -36,8 +36,8 @@
                   <Insets left="20.0" />
                </HBox.margin>
             </Label>
-            <TextField prefHeight="25.0" prefWidth="130.0" promptText="Enter seach items" style="-fx-border-radius: 20; -fx-background-radius: 20;" />
-            <ComboBox fx:id="categoryBox" onAction="#chooseCategory" prefHeight="25.0" prefWidth="95.0" promptText="Category" style="-fx-background-color: white; -fx-background-radius: 50; -fx-border-radius: 50;">
+            <TextField fx:id="searchField" prefHeight="25.0" prefWidth="130.0" promptText="Enter search items" style="-fx-border-radius: 20; -fx-background-radius: 20;" />
+            <ComboBox fx:id="categoryComBox" onAction="#chooseCategory" prefHeight="25.0" prefWidth="95.0" promptText="Category" style="-fx-background-color: white; -fx-background-radius: 50; -fx-border-radius: 50;">
                <effect>
                   <Blend />
                </effect>
@@ -54,11 +54,14 @@
    <left>
       <VBox prefHeight="200.0" prefWidth="70.0" spacing="10.0" BorderPane.alignment="CENTER">
          <children>
-            <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="85.0" text="Account" VBox.vgrow="ALWAYS" />
-            <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="86.0" text="History" />
-            <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="79.0" text="Wallet" VBox.vgrow="ALWAYS" />
-            <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="79.0" text="Selling" />
-            <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="93.0" text="Setting" />
+            <Button fx:id="acountBut" mnemonicParsing="false" prefHeight="25.0" prefWidth="85.0" text="Account" VBox.vgrow="ALWAYS">
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin></Button>
+            <Button fx:id="historyBut" mnemonicParsing="false" prefHeight="25.0" prefWidth="86.0" text="History" />
+            <Button fx:id="walletBut" mnemonicParsing="false" prefHeight="25.0" prefWidth="79.0" text="Wallet" VBox.vgrow="ALWAYS" />
+            <Button fx:id="sellingBut" mnemonicParsing="false" prefHeight="25.0" prefWidth="79.0" text="Selling" />
+            <Button fx:id="settingBut" mnemonicParsing="false" prefHeight="25.0" prefWidth="93.0" text="Setting" />
          </children>
       </VBox>
    </left>
@@ -68,7 +71,7 @@
             <Insets top="30.0" />
          </BorderPane.margin>
          <children>
-            <ScrollPane VBox.vgrow="ALWAYS">
+            <ScrollPane fx:id="scrollPane" VBox.vgrow="ALWAYS">
                <content>
                   <FlowPane fx:id="containCards" prefHeight="200.0" prefWidth="200.0">
                      <padding>
@@ -85,7 +88,10 @@
          <children>
             <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
                <children>
-                  <Pagination prefHeight="200.0" prefWidth="200.0" />
+                  <Pagination fx:id="pagination" prefHeight="200.0" prefWidth="200.0">
+                     <VBox.margin>
+                        <Insets bottom="10.0" />
+                     </VBox.margin></Pagination>
                </children>
             </VBox>
          </children>
