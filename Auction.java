@@ -16,12 +16,12 @@ public class Auction extends Entity{
         this.product=product;
         this.currentPrice=currentPrice;
         this.miniumStep=miniumStep;
-        this.status=AuctionStatus.PENDING;
+        this.status=AuctionStatus.OPEN;
         this.startTime=LocalDateTime.now();
         this.finishTime=startTime.plusDays(1);
     }
     public void setCurentWinner(Clients bidder,double price){
-        if(this.currentPrice + miniumStep<=price){
+        if(this.currentPrice + miniumStep <= price){
             this.currentWinner=bidder;
             this.currentPrice=price;
             this.addBidTransaction(bidder,price);
@@ -38,5 +38,10 @@ public class Auction extends Entity{
 		return this.currentPrice;
 	}
 
-
+    public AuctionStatus getStatus() {
+        return status;
+    }
+    public void setStatus(AuctionStatus status){
+        this.status = status;
+    }
 }
