@@ -8,6 +8,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.PieChart;
+import javafx.scene.chart.ScatterChart;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -31,7 +32,7 @@ public class ControlHistory implements Initializable {
 
         +Tiếp theo: mới nhận data từ MainBoard || Database rồi mới gọi loadDataForPurchases();
      */
-    List<Auction> auctionList = new ArrayList<>();
+    private List<Auction> auctionList = new ArrayList<>();
     public void setAuctionList(List<Auction> auctionList){
         this.auctionList = auctionList;
         loadDataForPurchases();
@@ -67,13 +68,13 @@ public class ControlHistory implements Initializable {
         tablePurchases.setItems(auctionObservableList);
 
     }
-    //observableArrayList(Callback extractor)	tự động update khi property con thay đổi
+    //observableArrayList(Callback extractor)   tự động update khi property con thay đổi
     // cần phải thay đổi ngay
     public void setDataForColumn(){
         itemColPurchases.setCellValueFactory(cellData -> {
             //cellData mang thông tin Auction hiển thị lên trên màn hình
             // -> getValue() trả ra Aution của hàng;
-            Item product = cellData.getValue().getProduct();
+            Item product = cellData.getValue().getItem();
             String name = (product != null) ? product.getName() : "Unknown!";
             //JavaFx không chấp nhận return name
             //Do nó bảng tableView chỉ chấp nhận đối tượng trả ve
@@ -82,22 +83,22 @@ public class ControlHistory implements Initializable {
         });
 
         categoryColPurchases.setCellValueFactory(cellData -> {
-            Item product = cellData.getValue().getProduct();
+            Item product = cellData.getValue().getItem();
             String category = product.toString();
             return new SimpleStringProperty(category);
         });
 
         winpriceColPurchases.setCellValueFactory(cellData ->{
-            return new SimpleObjectProperty<>(cellData.getValue().getCurrentPrice());
+               return new SimpleObjectProperty<>(cellData.getValue().getCurrentPrice());
         });
 
-        dateColPurchases.setCellValueFactory(cellData ->
-                new SimpleObjectProperty<>(cellData.getValue().getFinishTime())
-        );
+        dateColPurchases.setCellValueFactory(cellData -> {
+            return new SimpleObjectProperty<>(cellData.getValue().getFinishTime());
+        });
 
-        statusColPurchases.setCellValueFactory(cellData ->
-                new SimpleObjectProperty<>(cellData.getValue().getStatus())
-        );
+        statusColPurchases.setCellValueFactory(cellData -> {
+            return new SimpleObjectProperty<>(cellData.getValue().getStatus());
+        });
     }
     //
     public void setDataForCategory(){
@@ -115,7 +116,7 @@ public class ControlHistory implements Initializable {
     public void loadPieChart(){
         Map<ItemCategory,Integer> count = new HashMap<>();
         for(Auction auction: auctionList){
-            ItemCategory temp =  auction.getProduct().getCategory();
+            ItemCategory temp =  auction.getItem().getCategory();
             count.put(temp,count.getOrDefault(temp,0) + 1);
         }
         int total = 0;
@@ -145,7 +146,34 @@ public class ControlHistory implements Initializable {
     //-------------
     //FOR SELLING
     //-------------
-    //continue
+    private List<Auction> auctionSelling = new ArrayList<>();
+    public void setAuctionSelling(List<Auction> auctionSelling){
+        this.auctionSelling = auctionSelling;
+    }
+    @FXML
+    private TableView<Auction> tableSelling;
+    @FXML
+    private TableColumn<Auction,String> itemColSelling;
+    @FXML
+    private TableColumn<Auction,Double> indexColSelling;
+    @FXML
+    private TableColumn<Auction,Double> currentbidColSelling ;
+    @FXML
+    private TableColumn<Auction,LocalDateTime> enddateColSelling;
+    @FXML
+    private TableColumn<Auction,AuctionStatus> statusColSelling;
+    @FXML
+    private ComboBox<ItemCategory> typeComboSelling;
+    @FXML
+    private ScatterChart<LocalDateTime,Double> scatterchartSelling;
+
+    //
+    public void loadDataForSelling(){
+        ObservableList<Auction> auctionObservableSelling = FXCollections.observableArrayList(auctionSelling);
+        tableSelling.setItems(auctionObservableSelling);
+    }
+
+
 
 
     //khởi tạo
