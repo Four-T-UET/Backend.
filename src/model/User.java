@@ -20,7 +20,7 @@ public abstract class User extends Entity {
                 throw new AuthenticationException("Tài khoản đăng nhập không hợp lệ");
             }
         }catch (AuthenticationException e){
-            System.out.println(e.getMessage());
+            System.out.println(e.getMessage()); // catch này sau này UI xử lý
         }
         return check;
     }

@@ -1,11 +1,12 @@
 package model;
 
+
 import enums.AuctionEvent;
 import enums.AuctionStatus;
+import enums.AuthenticationException;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class Auction extends Entity {
     private AuctionStatus status;
@@ -13,43 +14,32 @@ public class Auction extends Entity {
     private LocalDateTime finishTime;
     private Item product;
     private double currentPrice;
-    private double miniumStep;
+    private double minimumStep;
     private Bidder currentWinner;
-	private HashSet<Bidder> observers = new HashSet<>();
-    private HashMap<String,BidTransaction> BidHistory=new HashMap<>();
-	private ReentrantLock bidLock = new ReentrantLock();
+	private AuctionObservers auctionObservers;
+    private HashMap<String,BidTransaction> BidHistory = new HashMap<>();
 	// Constructor
     public Auction(Item product, double currentPrice, double miniumStep){
-		if(currentPrice < 0){
-			System.out.println("Giá tiền không hợp lệ, vui lòng nhập lại: "); // thêm ngoại lệ
+		try{
+			if(currentPrice < 0){
+				throw new AuthenticationException("Giá tiến không hợp lệ. Vui lòng nhập lại");
+			}
+		}catch (AuthenticationException e){
+			System.out.println(e.getMessage());
 		}
+
+
         super();
+		this.auctionObservers=new AuctionObservers();
         this.product=product;
         this.currentPrice=currentPrice;
-        this.miniumStep=miniumStep;
+        this.minimumStep=miniumStep;
         this.status= AuctionStatus.PENDING;
         this.startTime=LocalDateTime.now();
         this.finishTime=startTime.plusDays(1);//useless
     }
-
-	// Observer đăng ký
-	public void registerObserver(Bidder bidder){
-		if (bidder == null){
-			return;
-		}
-		bidLock.lock();
-		try {
-			observers.add(bidder);
-		} finally {
-			bidLock.unlock();
-		}
-	}
-
-	// Thông báo cho tất cả các observer về sự thay đổi Auction
 	public void notifyObservers(AuctionEvent event, String message){
-		for (Bidder observer: observers){
-			observer.update(this,event,message);
-		}
+		auctionObservers.sendNotification(this,event, message );
 	}
 	// Hàm kiểm tra, set người chiến thắng hiện tại
     public boolean setCurrentWinner(Bidder bidder, double price){
@@ -59,14 +49,14 @@ public class Auction extends Entity {
 			if (bidder == null || this.status != AuctionStatus.RUNNING){
 				return false;
 			}
-			if (this.currentPrice + miniumStep <= price) {
+			if (this.currentPrice + minimumStep <= price) {
 				//update new winner
 				this.currentWinner = bidder;
 				this.currentPrice = price;
 				this.addBidTransaction(bidder, price);
 
 				// add observer
-				this.registerObserver(bidder);
+				auctionObservers.registerObserver(bidder);
 
 				notifyObservers(AuctionEvent.PRICE_UPDATED, "Gia da duoc cap nhat: " + price);
 				return true;
@@ -84,7 +74,7 @@ public class Auction extends Entity {
 
 	// Getter - Setter
 	public double getMiniumStep(){
-		return this.miniumStep;
+		return this.minimumStep;
 	}
 	public double getCurrentPrice(){
 		return this.currentPrice;
@@ -119,7 +109,7 @@ public class Auction extends Entity {
 			return;
 		}
 
-		this.currentWinner.getWallet().deductLockBalance();
+		this.currentWinner.deductLockbalance(currentPrice);
 		this.status = AuctionStatus.PAID;
 		System.out.println("Phiên đấu giá đã được thanh toán");
 	}
@@ -129,7 +119,7 @@ public class Auction extends Entity {
 			this.status = AuctionStatus.CANCELLED;
 			notifyObservers(AuctionEvent.AUCTION_CANCELLED,"Phiên đấu giá đã bị huỷ");
 			try{
-				this.currentWinner.getWallet().releaseBalance();
+				this.currentWinner.releaseBalance(currentPrice);
 
 			} catch (NullPointerException e) {
 				System.out.println("");

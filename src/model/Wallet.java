@@ -1,8 +1,11 @@
 package model;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 public class Wallet extends Entity {
-    private double balance;
+    private volatile double balance;
     private double lockBalance;
+    private ReentrantLock lock=new ReentrantLock();
     public Wallet(){
         super();
         this.balance = 0;this.lockBalance = 0;
@@ -14,7 +17,7 @@ public class Wallet extends Entity {
     public double getLockBalance(){return this.lockBalance;}
 
     //Methods
-    public void deposit(double amount){
+    public synchronized void deposit(double amount){
         balance += amount;
     }
     public synchronized void lockWallet(double amount){
@@ -22,14 +25,25 @@ public class Wallet extends Entity {
         this.lockBalance = amount;
     }
 
-    public void releaseBalance(){
-        this.balance += this.lockBalance;
-        this.lockBalance = 0;
+    public void releaseBalance(double amount){
+        lock.lock();
+        try {
+            this.balance += amount;
+            this.lockBalance -= amount;
+        }finally {
+            lock.unlock();
+        }
+
     }
 
-    public void deductLockBalance(){
-        this.balance-=this.lockBalance;
-        this.lockBalance=0;
+    public void deductLockBalance(double amount){
+        lock.lock();
+        try {
+            this.balance -= amount;
+            this.lockBalance -= amount;
+        }finally{
+            lock.unlock();
+        }
     }
 
 }

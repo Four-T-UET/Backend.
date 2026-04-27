@@ -83,7 +83,7 @@ public class Clients extends User implements Bidder, Seller{
 			boolean amIWinner = (a.getCurrentWinner() == this);
 			
 			if (isMoneyLocked && !amIWinner){
-				this.wallet.releaseBalance();
+				this.wallet.releaseBalance(a.getCurrentPrice());
 				System.out.println("Ban da bi vuot gia, tien da duoc tra ve tai khoan");
 			}
 		}
@@ -93,9 +93,17 @@ public class Clients extends User implements Bidder, Seller{
     public Wallet getWallet(){
         return this.wallet;
     }
-				
 
-//    @Override
+    @Override
+    public void releaseBalance(double amount) {
+        wallet.releaseBalance(amount);
+    }
+
+    @Override
+    public void deductLockbalance(double amount) {
+        wallet.deductLockBalance(amount);
+    }
+    //    @Override
 //    public void setAutoBid(model.Auction a, double maxBid, double increment) {
 //
 //    }
