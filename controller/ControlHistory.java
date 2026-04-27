@@ -1,6 +1,5 @@
 package controller;
 
-import controller.out.production.Backend_API.ItemCategory;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -15,7 +14,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import java.time.format.DateTimeFormatter;
+
 import java.time.Duration;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -26,6 +25,7 @@ import javafx.scene.image.ImageView;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.*;
+import javafx.util.Callback;
 
 public class ControlHistory implements Initializable {
     //_______________________
@@ -66,7 +66,7 @@ public class ControlHistory implements Initializable {
     @FXML
     private PieChart piechartPurchases;
 
-    //observableArrayList(Callback extractor)   tự động update khi property con thay đổi
+    //observableArrayList(Callback extractor)	tự động update khi property con thay đổi
     // cần phải thay đổi ngay
     public void setDataForColumn(){
         itemColPurchases.setCellValueFactory(cellData -> {
@@ -94,32 +94,7 @@ public class ControlHistory implements Initializable {
             return new SimpleObjectProperty<>(cellData.getValue().getFinishTime());
         });
 
-        dateColPurchases.setCellFactory(column -> new TableCell<Auction, LocalDateTime>() {
-            @Override
-            protected void updateItem(LocalDateTime item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    LocalDateTime now = LocalDateTime.now();
-                    if (now.isAfter(item)) {
-                        setText("Ended");
-                    } else {
-                        Duration duration = Duration.between(now, item);
-                        long days = duration.toDays();
-                        long hours = duration.toHoursPart();
-                        long minutes = duration.toMinutesPart();
-                        long seconds = duration.toSecondsPart();
-
-                        if(days > 0) {
-                            setText(String.format("%d ngày %02d:%02d:%02d", days, hours, minutes, seconds));
-                        } else {
-                            setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
-                        }
-                    }
-                }
-            }
-        });
+        dateColPurchases.setCellFactory(getCountdownCellFactory());
 
         statusColPurchases.setCellValueFactory(cellData -> {
             return new SimpleObjectProperty<>(cellData.getValue().getStatus());
@@ -204,7 +179,25 @@ public class ControlHistory implements Initializable {
             return new SimpleObjectProperty<>(cellData.getValue().getFinishTime());
         });
 
-        enddateColSelling.setCellFactory(column -> new TableCell<Auction, LocalDateTime>() {
+        enddateColSelling.setCellFactory(getCountdownCellFactory());
+        
+        statusColSelling.setCellValueFactory(cellData -> {
+            return new SimpleObjectProperty<>(cellData.getValue().getStatus());
+        });
+        
+    }
+    public void setScatterChart(Auction sellingData){
+        CategoryAxis xAxis = new CategoryAxis(); // category axis for String
+        xAxis.setLabel("Time");
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setLabel("Current Bid");
+        ScatterChart<String, Number> scatterChart = new ScatterChart<>(xAxis, yAxis);
+        scatterChart.setTitle("Auction Selling Data");
+
+    }
+
+    private Callback<TableColumn<Auction, LocalDateTime>, TableCell<Auction, LocalDateTime>> getCountdownCellFactory() {
+        return column -> new TableCell<Auction, LocalDateTime>() {
             @Override
             protected void updateItem(LocalDateTime item, boolean empty) {
                 super.updateItem(item, empty);
@@ -221,7 +214,7 @@ public class ControlHistory implements Initializable {
                         long minutes = duration.toMinutesPart();
                         long seconds = duration.toSecondsPart();
 
-                        if(days > 0) {
+                        if (days > 0) {
                             setText(String.format("%d ngày %02d:%02d:%02d", days, hours, minutes, seconds));
                         } else {
                             setText(String.format("%02d:%02d:%02d", hours, minutes, seconds));
@@ -229,23 +222,7 @@ public class ControlHistory implements Initializable {
                     }
                 }
             }
-        });
-        
-        statusColSelling.setCellValueFactory(cellData -> {
-            return new SimpleObjectProperty<>(cellData.getValue().getStatus());
-        });
-        
-    }
-    public void setScatterChart(Auction sellingData){
-        CategoryAxis xAxis = new CategoryAxis(); // category axis for String
-        xAxis.setLabel("Time");
-        NumberAxis yAxis = new NumberAxis();
-        yAxis.setLabel("Current Bid");
-        ScatterChart<String, Number> scatterChart = new ScatterChart<>(xAxis, yAxis);
-        scatterChart.setTitle("Auction Selling Data");
-
-
-
+        };
     }
 
     //khởi tạo
@@ -255,8 +232,10 @@ public class ControlHistory implements Initializable {
         setDataForColumn();
         setDataForSelling();
         setDataForCategory();
-        loadData(auctionList);
-        loadData(auctionSelling);
+        
+        loadDataForPurchases();
+        loadDataForSelling();
+        
         loadPieChart();
         loadImage("/controller/loginImage.jpg");// cần thay đổi:)))
 
@@ -269,10 +248,6 @@ public class ControlHistory implements Initializable {
         }));
         clock.setCycleCount(Animation.INDEFINITE);
         clock.play();
-    }
-    public void loadData(List<Auction> auctions){
-        ObservableList<Auction> auctionObservableSelling = FXCollections.observableArrayList(auctions);
-        tableSelling.setItems(auctionObservableSelling);
     }
 
     public void loadDataForPurchases(){
@@ -290,7 +265,8 @@ public class ControlHistory implements Initializable {
         //ItemCategory.value() trả về tất cả các giá trị
         //ta không cần phải liệt kê thủ công ARTS,VEHICLE,ELECTRONICS
         categoryComboPurchases.setItems(itemCategories);
+        if(typeComboSelling != null) {
+            typeComboSelling.setItems(itemCategories);
+        }
     }
-
-
 }

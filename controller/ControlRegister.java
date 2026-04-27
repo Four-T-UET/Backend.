@@ -31,27 +31,12 @@ public class ControlRegister implements Initializable {
         String pass = password.getText();
         String repass = reEnterpass.getText();
 
-        // 1. Kiểm tra không được để trống
-        if(user.isEmpty() || pass.isEmpty() || repass.isEmpty()){
-            showAlert(Alert.AlertType.WARNING, "Thiếu thông tin", "Vui lòng điền đầy đủ tên đăng nhập và mật khẩu!");
-            return;
+        // Validate
+        if (!validate(user, pass, repass)) {
+            return; // Nếu không hợp lệ thì dừng việc tạo tài khoản
         }
 
-        // 2. Kiểm tra mật khẩu nhập lại có khớp không
-        if(!pass.equals(repass)){
-            showAlert(Alert.AlertType.ERROR, "Lỗi đăng ký", "Mật khẩu nhập lại không khớp!");
-            return;
-        }
-
-        // 3. (Tuỳ chọn) Kiểm tra độ dài/độ an toàn của mật khẩu
-        if(pass.length() < 6){
-            showAlert(Alert.AlertType.WARNING, "Mật khẩu yếu", "Mật khẩu phải có ít nhất 6 ký tự!");
-            return;
-        }
-
-        // 4. Nếu mọi thứ hợp lệ -> Xử lý lưu database và chuyển về Login
-        // TODO: Database/List lưu trữ acc ở đây (tạm thời Hardcode in ra console)
-        System.out.println("Tạo tài khoản thành công cho user: " + user);
+        LoginDB.insertUser(user, pass);// connect to database
 
         Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
         successAlert.setTitle("Thành công");
@@ -62,7 +47,7 @@ public class ControlRegister implements Initializable {
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try{
                 // Gọi hàm SignUpToLogin và truyền registerButton vào để hàm biết Stage nào cần đổi
-                ChangeScene.SignUpToLogin(registerButton);
+                ChangeScene.SignUpToLogin(event);
             }
             catch (Exception e){
                 e.printStackTrace();
@@ -77,6 +62,29 @@ public class ControlRegister implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+    private boolean validate(String user,String pass,String repass){
+        // 1. Kiểm tra không được để trống
+        if(LoginDB.isUserExists(user)){
+            return false;
+        }
+        if(user.isEmpty() || pass.isEmpty() || repass.isEmpty()){
+            showAlert(Alert.AlertType.WARNING, "Thiếu thông tin", "Vui lòng điền đầy đủ tên đăng nhập và mật khẩu!");
+            return false;
+        }
+
+        // 2. Kiểm tra mật khẩu nhập lại có khớp không
+        if(!pass.equals(repass)){
+            showAlert(Alert.AlertType.ERROR, "Lỗi đăng ký", "Mật khẩu nhập lại không khớp!");
+            return false;
+        }
+
+        // 3. (Tuỳ chọn) Kiểm tra độ dài/độ an toàn của mật khẩu
+        if(pass.length() < 6){
+            showAlert(Alert.AlertType.WARNING, "Mật khẩu yếu", "Mật khẩu phải có ít nhất 6 ký tự!");
+            return false;
+        }
+        return true;
     }
 
     @Override
