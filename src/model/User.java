@@ -1,5 +1,9 @@
 package model;
 
+import enums.AuthenticationException;
+
+import javax.swing.*;
+
 public abstract class User extends Entity {
     private String username;
     private String password;
@@ -8,9 +12,18 @@ public abstract class User extends Entity {
         this.username = username;
         this.password = password;
     }
-    public boolean login(String name, String pass){
-        return (this.username.equals(name)) && (this.password.equals(pass));
+    public synchronized boolean login(String name, String pass){
+        boolean check = true;
+        try{
+            check = (this.username.equals(name)) && (this.password.equals(pass));
+            if(check == false){
+                throw new AuthenticationException("Tài khoản đăng nhập không hợp lệ");
+            }
+        }catch (AuthenticationException e){
+            System.out.println(e.getMessage());
+        }
+        return check;
     }
-
+    // synchronized để avoid 2 thằng cùng login 1 thời điểm
 }
 

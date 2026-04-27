@@ -12,8 +12,12 @@ public class Wallet extends Entity {
     public void setLockBalance(double lockBalance){this.lockBalance = lockBalance;}
     public double getBalance(){return this.balance;}
     public double getLockBalance(){return this.lockBalance;}
+
     //Methods
-    public void lockWallet(double amount){
+    public void deposit(double amount){
+        balance += amount;
+    }
+    public synchronized void lockWallet(double amount){
         this.balance = this.balance - (amount - this.lockBalance);
         this.lockBalance = amount;
     }
@@ -23,10 +27,9 @@ public class Wallet extends Entity {
         this.lockBalance = 0;
     }
 
-    public double deductLockBalance(){
-        double money_has_paid = this.lockBalance;
-        this.lockBalance = 0;
-        return money_has_paid;
+    public void deductLockBalance(){
+        this.balance-=this.lockBalance;
+        this.lockBalance=0;
     }
 
 }

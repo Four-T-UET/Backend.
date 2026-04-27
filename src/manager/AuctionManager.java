@@ -18,6 +18,6 @@ public class AuctionManager{
 	private HashMap<String,Auction> AuctionList=new HashMap<>();
 	public void add(Auction auction){
 		this.AuctionList.put(auction.getId(),auction);
-		auction.startAuction();
+		System.out.println("Phiên đấu giá đã được thêm vào hệ thống");
 	}
 }

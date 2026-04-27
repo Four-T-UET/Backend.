@@ -1,7 +1,7 @@
 package enums;
 
 public enum AuctionStatus{
-	OPEN,
+	PENDING,
 	RUNNING,
 	FINISHED,
 	PAID,
